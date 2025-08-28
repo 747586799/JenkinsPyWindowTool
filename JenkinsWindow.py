@@ -72,6 +72,12 @@ class LoginPanel(wx.Panel):
         self.token_input.SetValue("a12345678")
         vbox.Add(self.token_input, 0, wx.EXPAND | wx.ALL, 5)
 
+        self.viewName_input = wx.TextCtrl(self)
+        self.viewName_input.SetHint("视图名字")
+        if getattr(sys, 'frozen', False):
+            self.viewName_input.SetValue("可使用任务")
+        vbox.Add(self.viewName_input, 0, wx.EXPAND | wx.ALL, 5)
+
         login_btn = wx.Button(self, label="Login")
         login_btn.Bind(wx.EVT_BUTTON, self.login)
         vbox.Add(login_btn, 0, wx.EXPAND | wx.ALL, 5)
@@ -86,6 +92,7 @@ class LoginPanel(wx.Panel):
         url = self.url_input.GetValue()
         user = self.user_input.GetValue()
         token = self.token_input.GetValue()
+        viewName = self.viewName_input.GetValue()
 
         if not url or not user or not token:
             self.log("Please input all fields.")
@@ -93,7 +100,7 @@ class LoginPanel(wx.Panel):
 
         try:
             self.isInLogin = True
-            Jenkin.connect(url,user,token)
+            Jenkin.connect(url,user,token,viewName)
             user_info = Jenkin.server.get_whoami()
             self.log(f"Connected to Jenkins success as {user_info['fullName']}")
             wx.CallLater(500, lambda: self.on_login_success(Jenkin.server, user_info))
@@ -246,7 +253,7 @@ class MainPanel(wx.Panel):
 
     #加载所有任务
     def loadJobs(self):
-        jobs = self.server.get_jobs()
+        jobs = Jenkin.get_jobs()
         self.job_list.InsertColumn(0, "状态", width=40)
         self.job_list.InsertColumn(1, "任务名", width=200)
         self.job_datas = []
@@ -445,7 +452,7 @@ class MainPanel(wx.Panel):
             self.log(f"未支持的控件 {str(control)}")
 
     def get_job_parameters(self, job_name):
-        job_info = self.server.get_job_info(job_name)
+        job_info = Jenkin.get_job_info(job_name)
         parameters = []
         for prop in job_info.get('property', []):
             if 'parameterDefinitions' in prop:
@@ -478,7 +485,7 @@ class MainPanel(wx.Panel):
         result = wx.MessageBox(f"是否确定开始任务{job_name}\n 参数：\n{str(params)}", "提示", wx.YES_NO | wx.ICON_INFORMATION)
 
         if result == wx.YES:
-            queue_id = self.server.build_job(job_name, parameters=params)
+            queue_id = Jenkin.build_job(job_name, parameters=params)
             runningJobCatch[job_name] = RunningJob(job, 0)
             job.status = JobStatus_WAITTING
             self.setJobStates(jobIndex, job)

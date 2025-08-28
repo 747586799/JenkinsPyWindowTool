@@ -23,7 +23,7 @@ class ParamsSaveTool():
     def __init__(self):
         self.Params = {}
         self.JobConnect = {}
-        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        if getattr(sys, 'frozen', False):
             base_dir = Path(sys._MEIPASS)
         else:
             base_dir = Path(__file__).resolve().parent

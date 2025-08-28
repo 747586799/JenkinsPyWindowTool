@@ -1,19 +1,22 @@
 import jenkins
 import time
 import JenkinsEx
+import sys
 
 class JenkinsTool:
     
     def __init__(self):
         self.jobs = {}
+        self.viewName = None
         return
 
-    def connect(self, url, username, password):
+    def connect(self, url, username, password, viewName):
         self.server = JenkinsEx.JenkinsEx(url, username=username, password=password)
+        self.viewName = viewName
 
     def get_jobs(self):
         """获取所有任务列表"""
-        self.jobs = self.server.get_jobs()
+        self.jobs = self.server.get_jobs(view_name=self.viewName)
         return self.jobs
     
     def get_job(self, job_name):
@@ -31,7 +34,11 @@ class JenkinsTool:
     def get_build_info(self, job_name, build_number):
         """获取构建信息"""
         return self.server.get_build_info(job_name, build_number)
-
+    
+    def get_job_info(self, job_name):
+        """获取任务信息"""
+        return self.server.get_job_info(job_name)
+    
     def get_last_build_number(self, job_name):
         """获取最近一次构建号"""
         job_info = self.server.get_job_info(job_name)
