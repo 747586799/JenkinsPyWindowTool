@@ -1,0 +1,1 @@
+{"Params": [{"key": "\u5bfb\u5b9d\u4e4b\u65c5", "Param": {"VersionName": "1.6.8", "VersionNum": "9", "ResourceVersionNum": "167005", "BranchName": "Taptap_0.6.7"}}], "JobConnect": {"PyJobTest": "\u5bfb\u5b9d\u4e4b\u65c5"}}
